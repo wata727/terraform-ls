@@ -479,12 +479,12 @@ func (svc *service) configureSessionDependencies(ctx context.Context, cfgOpts *s
 
 	svc.stateStore.SetLogger(svc.logger)
 
-	svc.lowPrioIndexer = scheduler.NewScheduler(svc.stateStore.JobStore, 1, job.LowPriority)
+	svc.lowPrioIndexer = scheduler.NewScheduler(svc.stateStore.JobStore, 2, job.LowPriority)
 	svc.lowPrioIndexer.SetLogger(svc.logger)
 	svc.lowPrioIndexer.Start(svc.sessCtx)
 	svc.logger.Printf("started low priority scheduler")
 
-	svc.highPrioIndexer = scheduler.NewScheduler(svc.stateStore.JobStore, 1, job.HighPriority)
+	svc.highPrioIndexer = scheduler.NewScheduler(svc.stateStore.JobStore, 2, job.HighPriority)
 	svc.highPrioIndexer.SetLogger(svc.logger)
 	svc.highPrioIndexer.Start(svc.sessCtx)
 	svc.logger.Printf("started high priority scheduler")
