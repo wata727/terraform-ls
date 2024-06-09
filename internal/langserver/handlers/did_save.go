@@ -14,22 +14,37 @@ import (
 )
 
 func (svc *service) TextDocumentDidSave(ctx context.Context, params lsp.DidSaveTextDocumentParams) error {
-	expFeatures, err := lsctx.ExperimentalFeatures(ctx)
-	if err != nil {
-		return err
-	}
-	if !expFeatures.ValidateOnSave {
-		return nil
-	}
-
 	dh := ilsp.HandleFromDocumentURI(params.TextDocument.URI)
 
 	cmdHandler := &command.CmdHandler{
 		StateStore: svc.stateStore,
 	}
-	_, err = cmdHandler.TerraformValidateHandler(ctx, cmd.CommandArgs{
-		"uri": dh.Dir.URI,
-	})
 
-	return err
+	expFeatures, err := lsctx.ExperimentalFeatures(ctx)
+	if err != nil {
+		return err
+	}
+	if expFeatures.ValidateOnSave {
+		_, err = cmdHandler.TerraformValidateHandler(ctx, cmd.CommandArgs{
+			"uri": dh.Dir.URI,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	linterOptions, err := lsctx.LinterOptions(ctx)
+	if err != nil {
+		return err
+	}
+	if linterOptions.TFLint.LintOnSave {
+		_, err = cmdHandler.TFLintHandler(ctx, cmd.CommandArgs{
+			"uri": dh.Dir.URI,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

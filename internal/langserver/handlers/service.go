@@ -121,6 +121,7 @@ func (svc *service) Assigner() (jrpc2.Assigner, error) {
 	clientName := ""
 	var expFeatures settings.ExperimentalFeatures
 	var validationOptions settings.ValidationOptions
+	var linterOptions settings.LinterOptions
 
 	m := map[string]rpch.Func{
 		"initialize": func(ctx context.Context, req *jrpc2.Request) (interface{}, error) {
@@ -135,6 +136,7 @@ func (svc *service) Assigner() (jrpc2.Assigner, error) {
 			ctx = ilsp.ContextWithClientName(ctx, &clientName)
 			ctx = lsctx.WithExperimentalFeatures(ctx, &expFeatures)
 			ctx = lsctx.WithValidationOptions(ctx, &validationOptions)
+			ctx = lsctx.WithLinterOptions(ctx, &linterOptions)
 
 			version, ok := lsctx.LanguageServerVersion(svc.srvCtx)
 			if ok {
@@ -313,6 +315,7 @@ func (svc *service) Assigner() (jrpc2.Assigner, error) {
 
 			ctx = lsctx.WithDiagnosticsNotifier(ctx, svc.diagsNotifier)
 			ctx = lsctx.WithExperimentalFeatures(ctx, &expFeatures)
+			ctx = lsctx.WithLinterOptions(ctx, &linterOptions)
 			ctx = exec.WithExecutorOpts(ctx, svc.tfExecOpts)
 			ctx = exec.WithExecutorFactory(ctx, svc.tfExecFactory)
 
@@ -460,6 +463,7 @@ func (svc *service) configureSessionDependencies(ctx context.Context, cfgOpts *s
 
 	svc.sessCtx = exec.WithExecutorOpts(svc.sessCtx, execOpts)
 	svc.sessCtx = exec.WithExecutorFactory(svc.sessCtx, svc.tfExecFactory)
+	svc.sessCtx = lsctx.WithLinterOptions(svc.sessCtx, &cfgOpts.Linters)
 
 	if svc.stateStore == nil {
 		store, err := state.NewStateStore()

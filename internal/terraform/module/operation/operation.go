@@ -34,4 +34,5 @@ const (
 	OpTypeSchemaVarsValidation
 	OpTypeReferenceValidation
 	OpTypeTerraformValidate
+	OpTypeTFLint
 )

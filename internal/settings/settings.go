@@ -34,6 +34,17 @@ type Terraform struct {
 	LogFilePath string `mapstructure:"logFilePath"`
 }
 
+type LinterOptions struct {
+	TFLint TFLint `mapstructure:"tflint"`
+}
+
+type TFLint struct {
+	Path       string `mapstructure:"path"`
+	ConfigPath string `mapstructure:"configPath"`
+	LintOnSave bool   `mapstructure:"lintOnSave"`
+	Timeout    string `mapstructure:"timeout"`
+}
+
 type Options struct {
 	CommandPrefix string   `mapstructure:"commandPrefix"`
 	Indexing      Indexing `mapstructure:"indexing"`
@@ -46,6 +57,8 @@ type Options struct {
 	IgnoreSingleFileWarning bool `mapstructure:"ignoreSingleFileWarning"`
 
 	Terraform Terraform `mapstructure:"terraform"`
+
+	Linters LinterOptions `mapstructure:"linters"`
 
 	XLegacyModulePaths              []string `mapstructure:"rootModulePaths"`
 	XLegacyExcludeModulePaths       []string `mapstructure:"excludeModulePaths"`
@@ -67,6 +80,20 @@ func (o *Options) Validate() error {
 		}
 		if stat.IsDir() {
 			return fmt.Errorf("Expected a Terraform binary, got a directory: %q", path)
+		}
+	}
+
+	if o.Linters.TFLint.Path != "" {
+		path := o.Linters.TFLint.Path
+		if !filepath.IsAbs(path) {
+			return fmt.Errorf("Expected absolute path for TFLint binary, got %q", path)
+		}
+		stat, err := os.Stat(path)
+		if err != nil {
+			return fmt.Errorf("Unable to find TFLint binary: %s", err)
+		}
+		if stat.IsDir() {
+			return fmt.Errorf("Expected a TFLint binary, got a directory: %q", path)
 		}
 	}
 

@@ -25,11 +25,12 @@ func _() {
 	_ = x[OpTypeSchemaVarsValidation-14]
 	_ = x[OpTypeReferenceValidation-15]
 	_ = x[OpTypeTerraformValidate-16]
+	_ = x[OpTypeTFLint-17]
 }
 
-const _OpType_name = "OpTypeUnknownOpTypeGetTerraformVersionOpTypeObtainSchemaOpTypeParseModuleConfigurationOpTypeParseVariablesOpTypeParseModuleManifestOpTypeLoadModuleMetadataOpTypeDecodeReferenceTargetsOpTypeDecodeReferenceOriginsOpTypeDecodeVarsReferencesOpTypeGetModuleDataFromRegistryOpTypeParseProviderVersionsOpTypePreloadEmbeddedSchemaOpTypeSchemaModuleValidationOpTypeSchemaVarsValidationOpTypeReferenceValidationOpTypeTerraformValidate"
+const _OpType_name = "OpTypeUnknownOpTypeGetTerraformVersionOpTypeObtainSchemaOpTypeParseModuleConfigurationOpTypeParseVariablesOpTypeParseModuleManifestOpTypeLoadModuleMetadataOpTypeDecodeReferenceTargetsOpTypeDecodeReferenceOriginsOpTypeDecodeVarsReferencesOpTypeGetModuleDataFromRegistryOpTypeParseProviderVersionsOpTypePreloadEmbeddedSchemaOpTypeSchemaModuleValidationOpTypeSchemaVarsValidationOpTypeReferenceValidationOpTypeTerraformValidateOpTypeTFLint"
 
-var _OpType_index = [...]uint16{0, 13, 38, 56, 86, 106, 131, 155, 183, 211, 237, 268, 295, 322, 350, 376, 401, 424}
+var _OpType_index = [...]uint16{0, 13, 38, 56, 86, 106, 131, 155, 183, 211, 237, 268, 295, 322, 350, 376, 401, 424, 436}
 
 func (i OpType) String() string {
 	if i >= OpType(len(_OpType_index)-1) {

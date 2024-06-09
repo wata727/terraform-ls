@@ -46,6 +46,7 @@ var (
 	ctxExperimentalFeatures = &contextKey{"experimental features"}
 	ctxDocumentContext      = &contextKey{"rpc context"}
 	ctxValidationOptions    = &contextKey{"validation options"}
+	ctxLinterOptions        = &contextKey{"linter options"}
 )
 
 func missingContextErr(ctxKey *contextKey) *MissingContextErr {
@@ -214,4 +215,26 @@ func ValidationOptions(ctx context.Context) (settings.ValidationOptions, error) 
 		return settings.ValidationOptions{}, missingContextErr(ctxValidationOptions)
 	}
 	return *validationOptions, nil
+}
+
+func WithLinterOptions(ctx context.Context, linterOptions *settings.LinterOptions) context.Context {
+	return context.WithValue(ctx, ctxLinterOptions, linterOptions)
+}
+
+func SetLinterOptions(ctx context.Context, linterOptions settings.LinterOptions) error {
+	e, ok := ctx.Value(ctxLinterOptions).(*settings.LinterOptions)
+	if !ok {
+		return missingContextErr(ctxLinterOptions)
+	}
+
+	*e = linterOptions
+	return nil
+}
+
+func LinterOptions(ctx context.Context) (settings.LinterOptions, error) {
+	linterOptions, ok := ctx.Value(ctxLinterOptions).(*settings.LinterOptions)
+	if !ok {
+		return settings.LinterOptions{}, missingContextErr(ctxLinterOptions)
+	}
+	return *linterOptions, nil
 }

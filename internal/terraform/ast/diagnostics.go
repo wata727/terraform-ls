@@ -15,6 +15,7 @@ const (
 	SchemaValidationSource
 	ReferenceValidationSource
 	TerraformValidateSource
+	TFLintSource
 )
 
 func (d DiagnosticSource) String() string {

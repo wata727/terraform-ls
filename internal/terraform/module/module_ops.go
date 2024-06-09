@@ -35,6 +35,7 @@ import (
 	"github.com/hashicorp/terraform-ls/internal/terraform/datadir"
 	op "github.com/hashicorp/terraform-ls/internal/terraform/module/operation"
 	"github.com/hashicorp/terraform-ls/internal/terraform/parser"
+	"github.com/hashicorp/terraform-ls/internal/tflint"
 	"github.com/hashicorp/terraform-ls/internal/uri"
 	tfaddr "github.com/hashicorp/terraform-registry-address"
 	"github.com/hashicorp/terraform-schema/earlydecoder"
@@ -1004,6 +1005,35 @@ func TerraformValidate(ctx context.Context, modStore *state.ModuleStore, modPath
 	validateDiags := diagnostics.HCLDiagsFromJSON(jsonDiags)
 
 	return modStore.UpdateModuleDiagnostics(modPath, ast.TerraformValidateSource, ast.ModDiagsFromMap(validateDiags))
+}
+
+func TFLint(ctx context.Context, modStore *state.ModuleStore, modPath string) error {
+	mod, err := modStore.ModuleByPath(modPath)
+	if err != nil {
+		return err
+	}
+
+	// Avoid linting if it is already in progress or already finished
+	if mod.ModuleDiagnosticsState[ast.TFLintSource] != op.OpStateUnknown && !job.IgnoreState(ctx) {
+		return job.StateNotChangedErr{Dir: document.DirHandleFromPath(modPath)}
+	}
+
+	err = modStore.SetModuleDiagnosticsState(modPath, ast.TFLintSource, op.OpStateLoading)
+	if err != nil {
+		return err
+	}
+
+	tflintExec, err := tflint.TFLintExecutorForModule(ctx, mod.Path)
+	if err != nil {
+		return err
+	}
+
+	diags, err := tflintExec.Inspect(ctx)
+	if err != nil {
+		return err
+	}
+
+	return modStore.UpdateModuleDiagnostics(modPath, ast.TFLintSource, ast.ModDiagsFromMap(diags))
 }
 
 // GetModuleDataFromRegistry obtains data about any modules (inputs & outputs)

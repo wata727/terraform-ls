@@ -27,6 +27,7 @@ func cmdHandlers(svc *service) cmd.Handlers {
 		cmd.Name("module.calls"):       cmdHandler.ModuleCallsHandler,
 		cmd.Name("module.providers"):   cmdHandler.ModuleProvidersHandler,
 		cmd.Name("module.terraform"):   cmdHandler.TerraformVersionRequestHandler,
+		cmd.Name("tflint"):             cmdHandler.TFLintHandler,
 	}
 }
 
